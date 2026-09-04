@@ -1,4 +1,4 @@
-const TodoCard = ({ todo, onToggle, onDelete }) => {
+const TodoCard = ({ todo, onToggle, onDelete , onEdit }) => {
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:shadow-md">
       <div className="flex items-start justify-between gap-4">
@@ -62,6 +62,13 @@ const TodoCard = ({ todo, onToggle, onDelete }) => {
           >
             View
           </a>
+
+           <button
+    onClick={() => onEdit(todo)}
+    className="text-sm font-medium text-gray-600 hover:text-gray-900"
+  >
+    Edit
+  </button>
 
           <button
             onClick={() => onDelete(todo._id)}

@@ -1,7 +1,17 @@
-import { useState } from "react";
-import { createTodo } from "../services/todoApi";
+import { useEffect, useState } from "react";
+import {
+  createTodo,
+  updateTodo,
+} from "../services/todoApi";
 
-const TodoForm = ({ onClose, onTodoCreated }) => {
+const TodoForm = ({
+  todo,
+  onClose,
+  onTodoCreated,
+  onTodoUpdated,
+}) => {
+  const isEditing = Boolean(todo);
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -11,6 +21,19 @@ const TodoForm = ({ onClose, onTodoCreated }) => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (todo) {
+      setFormData({
+        title: todo.title || "",
+        description: todo.description || "",
+        priority: todo.priority || "medium",
+        dueDate: todo.dueDate
+          ? new Date(todo.dueDate).toISOString().split("T")[0]
+          : "",
+      });
+    }
+  }, [todo]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,18 +56,34 @@ const TodoForm = ({ onClose, onTodoCreated }) => {
       setLoading(true);
       setError("");
 
-      const todo = await createTodo({
+      const payload = {
         title: formData.title.trim(),
         description: formData.description.trim(),
         priority: formData.priority,
         dueDate: formData.dueDate || undefined,
-      });
+      };
 
-      onTodoCreated(todo);
+      if (isEditing) {
+        const updatedTodo = await updateTodo(
+          todo._id,
+          payload
+        );
+
+        onTodoUpdated(updatedTodo);
+      } else {
+        const newTodo = await createTodo(payload);
+
+        onTodoCreated(newTodo);
+      }
+
       onClose();
     } catch (error) {
       console.error(error);
-      setError("Failed to create todo.");
+      setError(
+        isEditing
+          ? "Failed to update todo."
+          : "Failed to create todo."
+      );
     } finally {
       setLoading(false);
     }
@@ -53,16 +92,16 @@ const TodoForm = ({ onClose, onTodoCreated }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
       <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">
-
-        {/* Header */}
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold text-gray-900">
-              Create Todo
+              {isEditing ? "Edit Todo" : "Create Todo"}
             </h2>
 
             <p className="mt-1 text-sm text-gray-500">
-              Add something you need to get done.
+              {isEditing
+                ? "Update your todo details."
+                : "Add something you need to get done."}
             </p>
           </div>
 
@@ -75,7 +114,6 @@ const TodoForm = ({ onClose, onTodoCreated }) => {
           </button>
         </div>
 
-        {/* Error */}
         {error && (
           <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
             {error}
@@ -83,8 +121,6 @@ const TodoForm = ({ onClose, onTodoCreated }) => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
-
-          {/* Title */}
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700">
               Title
@@ -100,7 +136,6 @@ const TodoForm = ({ onClose, onTodoCreated }) => {
             />
           </div>
 
-          {/* Description */}
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700">
               Description
@@ -116,9 +151,7 @@ const TodoForm = ({ onClose, onTodoCreated }) => {
             />
           </div>
 
-          {/* Priority + Due Date */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-
             <div>
               <label className="mb-2 block text-sm font-medium text-gray-700">
                 Priority
@@ -146,15 +179,12 @@ const TodoForm = ({ onClose, onTodoCreated }) => {
                 name="dueDate"
                 value={formData.dueDate}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-black focus:ring-1 focus:ring-black"
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none transition focus:border-black focus:ring-1 focus:ring-black"
               />
             </div>
-
           </div>
 
-          {/* Buttons */}
           <div className="flex justify-end gap-3 pt-2">
-
             <button
               type="button"
               onClick={onClose}
@@ -168,9 +198,14 @@ const TodoForm = ({ onClose, onTodoCreated }) => {
               disabled={loading}
               className="rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {loading ? "Creating..." : "Create Todo"}
+              {loading
+                ? isEditing
+                  ? "Updating..."
+                  : "Creating..."
+                : isEditing
+                ? "Update Todo"
+                : "Create Todo"}
             </button>
-
           </div>
         </form>
       </div>

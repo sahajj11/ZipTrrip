@@ -7,11 +7,10 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-
   build: {
     rollupOptions: {
       input: {
-        todos: "todos.html",
+        main: "index.html",
         todo: "todo.html",
       },
     },

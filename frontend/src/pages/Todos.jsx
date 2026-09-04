@@ -19,6 +19,8 @@ const Todos = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
 
+  const [editingTodo, setEditingTodo] = useState(null);
+
   
 
   useEffect(() => {
@@ -317,23 +319,40 @@ const Todos = () => {
                 todo={todo}
                 onToggle={handleToggle}
                 onDelete={handleDelete}
+                 onEdit={(todo) => {
+    setEditingTodo(todo);
+    setShowForm(true);
+  }}
               />
             ))}
           </div>
         )}
 
         {/* Add Todo Modal */}
-        {showForm && (
-          <TodoForm
-            onClose={() => setShowForm(false)}
-            onTodoCreated={(newTodo) => {
-              setTodos((currentTodos) => [
-                newTodo,
-                ...currentTodos,
-              ]);
-            }}
-          />
-        )}
+       {showForm && (
+  <TodoForm
+    todo={editingTodo}
+    onClose={() => {
+      setShowForm(false);
+      setEditingTodo(null);
+    }}
+    onTodoCreated={(newTodo) => {
+      setTodos((currentTodos) => [
+        newTodo,
+        ...currentTodos,
+      ]);
+    }}
+    onTodoUpdated={(updatedTodo) => {
+      setTodos((currentTodos) =>
+        currentTodos.map((todo) =>
+          todo._id === updatedTodo._id
+            ? updatedTodo
+            : todo
+        )
+      );
+    }}
+  />
+)}
 
       </div>
     </main>

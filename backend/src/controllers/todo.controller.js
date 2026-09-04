@@ -1,139 +1,72 @@
 import Todo from "../models/todo.model.js";
+import ApiError from "../utils/ApiError.js";
+import ApiResponse from "../utils/ApiResponse.js";
+import asyncHandler from "../utils/asyncHandler.js";
 
 // CREATE TODO
-export const createTodo = async (req, res) => {
-    try {
-        const { title, description, priority, dueDate } = req.body;
+export const createTodo = asyncHandler(async (req, res) => {
+    const { title, description, priority, dueDate } = req.body;
 
-        const todo = await Todo.create({
-            title,
-            description,
-            priority,
-            dueDate,
-        });
+    const todo = await Todo.create({ title, description, priority, dueDate });
 
-        res.status(201).json({
-            success: true,
-            message: "Todo created successfully",
-            data: todo,
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Failed to create todo",
-            error: error.message,
-        });
-    }
-};
-
+    return res
+        .status(201)
+        .json(new ApiResponse(201, todo, "Todo created successfully"));
+});
 
 // GET ALL TODOS
-export const getTodos = async (req, res) => {
-    try {
-        const todos = await Todo.find().sort({ createdAt: -1 });
+export const getTodos = asyncHandler(async (req, res) => {
+    const todos = await Todo.find().sort({ createdAt: -1 });
 
-        res.status(200).json({
-            success: true,
-            data: todos,
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Failed to fetch todos",
-            error: error.message,
-        });
-    }
-};
-
+    return res
+        .status(200)
+        .json(new ApiResponse(200, todos, "Todos fetched successfully"));
+});
 
 // GET SINGLE TODO
-export const getTodo = async (req, res) => {
-    try {
-        const { id } = req.params;
+export const getTodo = asyncHandler(async (req, res) => {
+    const { id } = req.params;
 
-        const todo = await Todo.findById(id);
+    const todo = await Todo.findById(id);
 
-        if (!todo) {
-            return res.status(404).json({
-                success: false,
-                message: "Todo not found",
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            data: todo,
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Failed to fetch todo",
-            error: error.message,
-        });
+    if (!todo) {
+        throw new ApiError(404, "Todo not found");
     }
-};
 
+    return res
+        .status(200)
+        .json(new ApiResponse(200, todo, "Todo fetched successfully"));
+});
 
 // UPDATE TODO
-export const updateTodo = async (req, res) => {
-    try {
-        const { id } = req.params;
+export const updateTodo = asyncHandler(async (req, res) => {
+    const { id } = req.params;
 
-        const todo = await Todo.findByIdAndUpdate(
-            id,
-            req.body,
-            {
-                new: true,
-                runValidators: true,
-            }
-        );
+    const todo = await Todo.findByIdAndUpdate(id, req.body, {
+        new: true,
+        runValidators: true,
+    });
 
-        if (!todo) {
-            return res.status(404).json({
-                success: false,
-                message: "Todo not found",
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            message: "Todo updated successfully",
-            data: todo,
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Failed to update todo",
-            error: error.message,
-        });
+    if (!todo) {
+        throw new ApiError(404, "Todo not found");
     }
-};
 
+    return res
+        .status(200)
+        .json(new ApiResponse(200, todo, "Todo updated successfully"));
+});
 
 // DELETE TODO
-export const deleteTodo = async (req, res) => {
-    try {
-        const { id } = req.params;
+export const deleteTodo = asyncHandler(async (req, res) => {
+    const { id } = req.params;
 
-        const todo = await Todo.findByIdAndDelete(id);
+    const todo = await Todo.findByIdAndDelete(id);
 
-        if (!todo) {
-            return res.status(404).json({
-                success: false,
-                message: "Todo not found",
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            message: "Todo deleted successfully",
-            data: todo,
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Failed to delete todo",
-            error: error.message,
-        });
+    if (!todo) {
+        throw new ApiError(404, "Todo not found");
     }
-};
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, todo, "Todo deleted successfully"));
+});

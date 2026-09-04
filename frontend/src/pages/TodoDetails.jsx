@@ -70,7 +70,7 @@ const TodoDetails = () => {
           </p>
 
           <a
-            href="/todos.html"
+            href="/"
             className="mt-5 inline-block rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800"
           >
             Back to Todos
@@ -90,7 +90,7 @@ const TodoDetails = () => {
 
         {/* Back */}
         <a
-          href="/todos.html"
+          href="/"
           className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900"
         >
           ← Back to Todos
