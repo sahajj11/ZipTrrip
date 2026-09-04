@@ -6,6 +6,13 @@ Built as a technical assignment with a focus on RESTful APIs, database persisten
 
 ---
 
+## Live Demo
+
+- **Frontend:** https://zip-trrip.vercel.app/
+- **Backend API:** https://ziptrrip-7vm6.onrender.com/
+
+---
+
 ## Features
 
 **Todo Management**
