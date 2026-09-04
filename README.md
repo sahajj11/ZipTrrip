@@ -23,7 +23,7 @@ Built as a technical assignment with a focus on RESTful APIs, database persisten
 **Todo Details**
 - Accessed via query parameter: `/todo.html?id=<todoId>`
 - Shows title, description, status, priority, due date, created/updated timestamps
-- Edit and delete directly from the page
+- Delete directly from the page
 
 ---
 
@@ -118,15 +118,7 @@ The backend handles request validation, CRUD operations, database communication,
 | `createdAt` | Date | Creation timestamp |
 | `updatedAt` | Date | Last update timestamp |
 
-```json
-{
-  "title": "Complete frontend",
-  "description": "Finish the Todo application frontend",
-  "completed": false,
-  "priority": "high",
-  "dueDate": "2026-09-10"
-}
-```
+
 
 ---
 
